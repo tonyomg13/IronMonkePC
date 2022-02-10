@@ -31,7 +31,7 @@ namespace IronMonke
             HarmonyPatches.ApplyHarmonyPatches();
             Utilla.Events.GameInitialized += OnGameInitialized;
 
-            RB.useGravity = true;
+            if (RB != null) RB.useGravity = true;
         }
 
         void OnDisable()
@@ -39,7 +39,7 @@ namespace IronMonke
             HarmonyPatches.RemoveHarmonyPatches();
             Utilla.Events.GameInitialized -= OnGameInitialized;
 
-            RB.useGravity = true;
+            if(RB != null) RB.useGravity = true;
         }
 
         void OnGameInitialized(object sender, EventArgs e)
@@ -55,15 +55,17 @@ namespace IronMonke
 
         }
 
-        void Update()
+        void FixedUpdate()
         {
             if(inRoom)
             {
                 bool primaryRight;
+
                 InputDevices.GetDeviceAtXRNode(rNode).TryGetFeatureValue(CommonUsages.primaryButton, out primaryRight);
                 bool B = primaryRight;
 
                 bool primaryLeft;
+
                 InputDevices.GetDeviceAtXRNode(lNode).TryGetFeatureValue(CommonUsages.primaryButton, out primaryLeft);
                 bool Y = primaryLeft;
 
@@ -78,15 +80,15 @@ namespace IronMonke
 
                 if(Y&&B)
                 {
-                    thrust = 4.1f;
+                    thrust = 3.0f;
                 } else
                 {
-                    thrust = 7.3f;
+                    thrust = 5.0f;
                 }
 
                 bool wasInput = Y | B;
-                if (wasInput) RB.useGravity = false;
-                if (!wasInput) RB.useGravity = true;
+                if (wasInput && RB.useGravity) RB.useGravity = false;
+                if (!wasInput && !RB.useGravity) RB.useGravity = true;
             }
             
         }
